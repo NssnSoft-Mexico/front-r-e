@@ -34,13 +34,11 @@ const clientLDAP = new ApolloClient({
 	}
 });
 
-
 const client = new ApolloClient({
 	cache: new InMemoryCache({
 		addTypename: false
     }),            
     uri: 'http://localhost:4000/graphql',
-    //uri: environment.API_CAPACITACIONES,
 
     onError: ({ networkError, graphQLErrors }) => {
 		console.log('graphQLErrors', graphQLErrors);
@@ -63,20 +61,6 @@ const autentificaLDAP = async (usuario,passwd) => {
       .catch(err => {console.log("error: "+err); return null});
 }
 
-const getIdUser = async (sAMAccountName) => {
-    let variables = { email: sAMAccountName };
-
-    return await client.query({
-        query: QUERY_USERS_DATA,
-        variables: variables,
-        fetchPolicy: "network-only"
-      })
-      .then(result => {
-          console.log("AQUI", result.data.getEmail);
-          return result.data.getEmail;})
-      .catch(err => {console.log("error: "+err); return null});
-}
-
 class Logins extends Component {
 
     state = { 
@@ -86,10 +70,6 @@ class Logins extends Component {
     limpiarState = () => {
         this.setState({...initialState});
    }
-
-   abrirAyuda = () => { this.setState({modalAyuda: !this.state.modalAyuda}); }
-   cerarAyuda = () => { this.setState({modalAyuda: false}); }
-   toggle     = () => { this.setState({modalAyuda: !this.state.modalAyuda}); }
 
     consultarUsuario = e => {
 

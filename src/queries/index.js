@@ -168,6 +168,29 @@ export const QUERY_CURSOS_USERS = gql`
 	}
 `;
 
+export const QUERY_PROD = gql`
+	query getProduct{
+		getProduct{
+			id
+			name
+			cantidad
+			activo
+		} 
+	}
+`;
+
+export const QUERY_PRODUCT = gql`
+	query getProductDel{
+		getProductDel{
+			id
+			name
+			cantidad
+			activo
+
+		} 
+	}
+`;
+
 export const QUERY_PERFIL = gql`
 query getIntegrantebyId($id_integrante: Int!) { 
     getIntegrantebyId(id_integrante: $id_integrante) {

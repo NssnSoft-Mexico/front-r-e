@@ -7,8 +7,8 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import Select from 'react-select';
 import { Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Toast } from 'reactstrap';
 import Button from 'react-bootstrap/Button';
-import { QUERY_CATALOGOS, QUERY_GETCURSOS, QUERY_GETCURSOS_BY_ID, QUERY_SEQUENCE, QUERY_DATOS, GET_CURSOS_PROV, QUERY_CURSOS_USERS,QUERY_PERFIL, QUERY_COMPETENCIAS, QUERY_COMPETENCIA, QUERY_CONOCIMIENTOS } from '../../src/queries';
-import { NUEVO_CURSO, UPDATE_CURSOS, ELIMINAR_CURSO } from '../../src/mutations';
+import { QUERY_CATALOGOS, QUERY_GETCURSOS, QUERY_GETCURSOS_BY_ID, QUERY_SEQUENCE, QUERY_DATOS, GET_CURSOS_PROV,QUERY_PROD,QUERY_PRODUCT, QUERY_CURSOS_USERS,QUERY_PERFIL, QUERY_COMPETENCIAS, QUERY_COMPETENCIA, QUERY_CONOCIMIENTOS } from '../../src/queries';
+import { NUEVO_CURSO, UPDATE_CURSOS,CREAR_PRODUCTO, ELIMINAR_CURSO } from '../../src/mutations';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -43,6 +43,7 @@ class Principal extends Component {
         this.state={
             modal: false,
             modalTabla: false,
+            modalProducto: false,
             modalConstancia: false,
             modalAyuda: false,
             modalAviso: true,
@@ -140,6 +141,20 @@ class Principal extends Component {
         this.limpiarCache();
     }
 
+    abrirModalProducto = (item) => { 
+        this.setState({
+            curso: item,
+            modalProducto: !this.state.modalProducto
+        }); 
+    }
+    cerrarModalProducto = () =>{
+        this.setState({modalProducto: false});
+        this.limpiarCache();
+    }
+
+    abirCursos = () => { this.setState({modalCursos: !this.state.modalCursos}); }
+    cerarCursos = () => { this.setState({modalCursos: false}); }
+
     validarForms = () => {
         const { name }= this.state.curso; 
 
@@ -193,13 +208,18 @@ class Principal extends Component {
                 <h2>Usuarios</h2>
                 <Button className="tBoton acciones" 
                     onClick={() => {
-                        this.abrirModalTabla();
-                }}>{'Lista de Compra' }</Button>
+                        this.abrirModalProducto();
+                }}>{'Añadir a Compras' }</Button>
+                <Button className="tBoton acciones" 
+                    onClick={() => {
+                        this.abirCursos();
+                }}>{'Lista de Eliminados' }</Button>
                 
                 <br/><br/>  
                 <FormGroup>
                     <div>
-                        <Query client= {client} query={QUERY_CURSOS_USERS}>
+                    
+                    <Query client= {client} query={QUERY_CURSOS_USERS}>
                             {({ loading, error, data, startPolling, stopPolling }) => {
                                 if(loading){
                                     return <p className="text-light">Cargando....</p>
@@ -471,6 +491,206 @@ class Principal extends Component {
                                         </ModalBody>
                                         <div className='form-control'><span className="obligado">* Campos requeridos</span></div>
                                     </Modal>
+
+                                    <Modal className="modal-dialog modal-lg" isOpen={this.state.modalProducto}>
+                                        <ModalHeader className="body-modal-aviso"> 
+                                            <label className="modalTitulo fl">Modificar Datos</label>
+                                            <label className="modalTitulo fr" onClick={this.cerrarModalProducto}> X </label>
+                                        </ModalHeader>
+                                        <ModalBody className="gird">
+                                            <div>
+                                                <FormGroup>
+                                                <div className="w50p">
+                                                    {campoObligatorio}
+                                                    <label>Nombre:</label>
+                                                </div>
+                                                <div className="w50p">
+                                                    <label>{campoObligatorio}Cantidad:</label>
+                                                </div>
+                                                </FormGroup>
+
+                                            </div>
+                                            <FormGroup>
+                                                <Mutation mutation = {CREAR_PRODUCTO} 
+                                                        onCompleted = {(loading,error,res) => 
+                                                            this.setState({
+                                                                ...this.state,
+                                                                msgExitos: true
+                                                            })
+                                                        } ignoreResults = {false} >
+                                                        {(updateCursos, {loading, data}) => {
+
+                                                            return(
+
+                                                                <form className="body-modal-corr"
+                                                                    onSubmit = {
+                                                                        e => {
+                                                                            e.preventDefault();
+                                    
+                                                                            const {
+                                                                                name,
+                                                                                cantidad,
+                                                                                activo
+                                                                            } = this.state.curso;
+                                                                            
+                                                                            localStorage.setItem('user', JSON.stringify(this.state.curso));
+
+                                                                            updateCursos({
+                                                                                variables: {
+                                                                                    name: name,
+                                                                                    cantidad: cantidad,
+                                                                                    activo: '1',
+                                                                                } 
+                                                                            })
+                                                                        }
+                                                                    } >
+                                                <div className="pb7p">
+                                                    <div>
+                                                        <input type="text" 
+                                                            className="form-control dw20" 
+                                                            placeholder="Nombre"
+                                                            onChange={e => {
+                                                                this.setState({
+                                                                    curso:{
+                                                                        ...this.state.curso,
+                                                                        name: e.target.value
+                                                                    }
+                                                                })
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            
+                                                <div className='pb7p'>
+                                                    <div>
+                                                        <input type="text" 
+                                                            className="form-control dw20" 
+                                                            placeholder="Cantidad"
+                                                            onChange={e => {
+                                                                this.setState({
+                                                                    curso:{
+                                                                        ...this.state.curso,
+                                                                        cantidad: e.target.value
+                                                                    }
+                                                                })
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="float-left">
+                                                                <button type="submit" 
+                                                                
+                                                                    className="grl-btn">Agregar producto</button>
+                                                </div>
+                                                
+                                                        </form>
+                                                        )
+                                                    }}
+                                                </Mutation>
+                                            </FormGroup>
+                                        </ModalBody>
+                                        <div className='form-control'><span className="obligado">* Campos requeridos</span></div>
+                                    </Modal>
+
+                    
+                                    <Modal
+                                        size="xl"
+                                        aria-labelledby="contained-modal-title-vcenter"
+                                        centered
+                                        isOpen={this.state.modalCursos}>
+                                        <ModalHeader className="body-modal-ayuda">
+                                            <label className="modalTitulo fl">Lista de compras Eliminados</label>
+                                            <label className="modalTitulo fr" onClick={this.cerarCursos}>X</label>
+                                        </ModalHeader>
+                                        <ModalBody className="body-modal-ayuda">
+                                            <FormGroup>
+                                                <div>
+                                                    <Query client= {client} query={QUERY_PRODUCT} >
+                                                        {({ loading, error, data, startPolling, stopPolling }) => {
+                                                            if(loading){
+                                                                return <p className="text-light">Cargando....</p>
+                                                            }
+                                                            if(error) return null; 
+                                                            const array = data.getProductDel;
+                                                            let datos = [];                                     
+                                                                return(
+                                                                    <Fragment>
+                                                                        <table className="table">
+                                                                            <thead className="Tabla">
+                                                                                <tr className="font-weight-bold">
+                                                                                    <th> Id </th>
+                                                                                    <th> Nombre </th>
+                                                                                    <th> Cantidad </th>
+                                                                                    <th> Activo </th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                            {array.map((item) =>(
+                                                                                <tr className="font-weight-bold"  key={item.id}>
+                                                                                    <td> {item.id} </td>
+                                                                                    <td> {item.name}</td>
+                                                                                    <td> {item.cantidad} </td>
+                                                                                    <td> {item.activo == "1" ? 'En inventario' : 'Sin registros'} </td> 
+                                                                                </tr>
+                                                                            ))}
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </Fragment>
+                                                                )
+                                                        }}
+                                                    </Query>
+                                                </div>
+                                            </FormGroup>
+                                        </ModalBody>
+                                    </Modal>
+                                    </Fragment>
+                                )
+                            }}
+                        </Query>
+
+                        <br/><br/>  
+                        <h2>Lista de compras</h2>
+                        <Query client= {client} query={QUERY_PROD}>
+                            {({ loading, error, data, startPolling, stopPolling }) => {
+                                if(loading){
+                                    return <p className="text-light">Cargando....</p>
+                                }
+                                if(error) return null;
+                                const array = data.getProduct;
+                                let datos = [];
+                     
+                                return(
+                                    <Fragment>
+                                        <table className="table">
+                                            <thead className="Tabla">
+                                                <tr className="font-weight-bold">
+                                                    <th> Id </th>
+                                                    <th> Nombre </th>
+                                                    <th> Cantidad </th>
+                                                    <th> Activo </th>
+                                                    <th> Acciones </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                            {array.map((item) =>(
+                                                <tr className="font-weight-bold"  key={item.id}>
+                                                    <td> {item.id} </td>
+                                                    <td> {item.name}</td>
+                                                    <td> {item.cantidad} </td>
+                                                    <td> {item.activo == "1" ? 'En inventario' : 'Sin registros'} </td> 
+                                                    <td>
+                                                        <div className="disF">
+                                                            <a id='dwnldLnk' />
+                                                            <Button className="acciones" 
+                                                            onClick={() => {
+                                                                    this.abrirModalTabla(item);
+                                                            }}>{'Eliminar' }</Button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            </tbody>
+                                        </table>
                                     </Fragment>
                                 )
                             }}
