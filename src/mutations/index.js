@@ -84,6 +84,17 @@ export const CREAR_PRODUCTO = gql`
     )}
 `;
 
+export const DEL_PRODUCT = gql`
+    mutation deleteProduct(
+        $id: String
+        $activo: String
+    ){
+        deleteProduct(
+        id: $id,
+        activo: $activo
+    )}
+`;
+
 export const ELIMINAR_CURSO = gql`
     mutation deleteCurso($id_modificacion: Int) {
         deleteCurso(id_modificacion: $id_modificacion)

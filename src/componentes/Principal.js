@@ -8,7 +8,7 @@ import Select from 'react-select';
 import { Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Toast } from 'reactstrap';
 import Button from 'react-bootstrap/Button';
 import { QUERY_CATALOGOS, QUERY_GETCURSOS, QUERY_GETCURSOS_BY_ID, QUERY_SEQUENCE, QUERY_DATOS, GET_CURSOS_PROV,QUERY_PROD,QUERY_PRODUCT, QUERY_CURSOS_USERS,QUERY_PERFIL, QUERY_COMPETENCIAS, QUERY_COMPETENCIA, QUERY_CONOCIMIENTOS } from '../../src/queries';
-import { NUEVO_CURSO, UPDATE_CURSOS,CREAR_PRODUCTO, ELIMINAR_CURSO } from '../../src/mutations';
+import { NUEVO_CURSO, UPDATE_CURSOS,CREAR_PRODUCTO,DEL_PRODUCT, ELIMINAR_CURSO } from '../../src/mutations';
 import moment from 'moment';
 import Swal from 'sweetalert2';
 import DatePicker, { registerLocale } from "react-datepicker";
@@ -17,6 +17,7 @@ import es from 'date-fns/locale/es';
 import { faFile, faTrash,faSearch,faComment } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Popup } from "semantic-ui-react";
+import { useMutation } from '@apollo/client';
 
 const styleLink = document.createElement("link");
 styleLink.rel = "stylesheet";
@@ -60,6 +61,7 @@ class Principal extends Component {
 
             curso: {
                 //crear curso
+                id: '',
                 id_modificacion: ''
                 ,proveedor: ''
                 ,id_curso: 0
@@ -152,6 +154,14 @@ class Principal extends Component {
         this.limpiarCache();
     }
 
+    abrirEliminar = (modificacion) => {
+        this.setState({
+            id: modificacion,
+            modalEliminar: !this.state.modalEliminar
+        });
+    }
+    cerarEliminar = () => { this.setState({modalEliminar: false}); }
+
     abirCursos = () => { this.setState({modalCursos: !this.state.modalCursos}); }
     cerarCursos = () => { this.setState({modalCursos: false}); }
 
@@ -169,7 +179,7 @@ class Principal extends Component {
         if(msgExitos){
             Swal.fire(
                 '¡Exito!',
-                'El Curso se actualizo correctamente.',
+                'El dato se actualizo correctamente.',
                 'success'
             ).then(function() {
                 window.location.href = "/principal";
@@ -492,6 +502,45 @@ class Principal extends Component {
                                         <div className='form-control'><span className="obligado">* Campos requeridos</span></div>
                                     </Modal>
 
+                                    <Modal onHide={this.cerarEliminar} isOpen={this.state.modalEliminar}>
+                                        <ModalHeader className="body-modal-aviso">
+                                            <label className="modalTitulo fl"> Confirmación </label>
+                                            <label className="modalTitulo fr" onClick={this.cerarEliminar}>X</label>
+                                        </ModalHeader>
+                                        <ModalBody className="body-modal-Aviso">
+                                            <FormGroup>
+                                                <Mutation mutation={DEL_PRODUCT}
+                                                onCompleted = {(loading,error,res) => 
+                                                    this.setState({
+                                                        ...this.state,
+                                                        modalEliminar: false
+                                                    })
+                                                }>
+                                                    {(addTodo, { loading, data }) => (
+                                                        <Fragment>
+                                                            <div className="color">
+                                                                <label className='textJus'> Seguro que quiere eliminar el curso? </label>
+                                                                <div className="mt-1 text-center">
+                                                                    <div className="text-center">
+                                                                        <button type="button" className="eliminar-btn"
+                                                                        onClick={ e => {
+                                                                            e.preventDefault();
+                                                                            console.log("s",data)
+                                                                            addTodo({ variables: { id: this.state.id, activo: '0' } });
+                                                                            window.location.reload(false);
+                                                                        }}> Eliminar </button>
+                                                                        <span className="mr-3 margin"/>
+                                                                        <button type="button" className="cancelar-btn" onClick={this.cerarEliminar}> Cancelar </button>
+                                                                    </div> 
+                                                                </div> 
+                                                            </div>
+                                                        </Fragment>
+                                                    )}
+                                                </Mutation>
+                                            </FormGroup>
+                                        </ModalBody>
+                                    </Modal>
+
                                     <Modal className="modal-dialog modal-lg" isOpen={this.state.modalProducto}>
                                         <ModalHeader className="body-modal-aviso"> 
                                             <label className="modalTitulo fl">Modificar Datos</label>
@@ -681,10 +730,13 @@ class Principal extends Component {
                                                     <td>
                                                         <div className="disF">
                                                             <a id='dwnldLnk' />
-                                                            <Button className="acciones" 
-                                                            onClick={() => {
-                                                                    this.abrirModalTabla(item);
-                                                            }}>{'Eliminar' }</Button>
+                                                            <Popup content={'Eliminar solicitud'} trigger={
+                                                                <FontAwesomeIcon className={item.estatus==='SOLICITADO'?'cursor':'cursor disTrash'}
+                                                                icon={faTrash}
+                                                                onClick={ e => {
+                                                                    e.preventDefault();
+                                                                        this.abrirEliminar(item.id);
+                                                                }} size='2x' color='#9d2449' />}/>
                                                         </div>
                                                     </td>
                                                 </tr>
