@@ -1,5 +1,5 @@
 {
-  "name": "capacitacion-rh-users-frontend",
+  "name": "examen",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -53,6 +53,10 @@
       "react-app",
       "react-app/jest"
     ]
+  },
+  "engines": {
+    "node": "15.0.1",
+    "npm": "7.0.3"
   },
   "browserslist": {
     "production": [
