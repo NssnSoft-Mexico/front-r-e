@@ -134,7 +134,7 @@ export const QUERY_GETUSUARIO_LDAP = gql`
 	query getLogin($user: String!,$pass: String!){
 		getLogin(user: $user,pass: $pass){
 			id
-			nombre
+			name
 			direccion
 		}
 	}

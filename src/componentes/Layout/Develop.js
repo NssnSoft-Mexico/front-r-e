@@ -3,7 +3,6 @@ import { withRouter } from 'react-router-dom';
 
 import Error from '../generico/Alertas/Error';
 
-const logo = require('../../assets/img/tipos.png');
 const initialState = {
     login: {
         usuario: null

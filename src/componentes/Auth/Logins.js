@@ -10,7 +10,6 @@ import { setContext } from "apollo-link-context";
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 
 
-const logo = require('../../assets/img/tipos.png');
 const initialState = {
     login: {
         user: null,

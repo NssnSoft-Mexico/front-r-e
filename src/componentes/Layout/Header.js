@@ -3,7 +3,6 @@ import { withRouter } from 'react-router-dom';
 
 import CerrarSesion from './CerraSesion';
 
-const logo = require('../../assets/img/logo_sfp_gob.png');
 
 let usuario = null;
 let rol = null;
