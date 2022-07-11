@@ -1,0 +1,65 @@
+.form {  
+    padding: 60px;
+    max-width:600px;
+    margin:0 auto;
+  }
+
+  @import url(https://fonts.googleapis.com/css?family=Roboto:400);
+form{ 
+  background-color: #ffffff;  
+  border-radius:4px;
+}
+
+form input, form textarea{
+  margin-bottom: 15px;
+  font-family: "Roboto", sans-serif;
+  width: 100%;
+  padding: 10px;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box; 
+  
+  color: #525c66; 
+  font-size: 1em;
+  resize: horizontal; 
+}
+
+form button {
+	display: block;
+	background-color: #0095eb;
+	padding: 8px 20px 8px 20px;
+	border: 0;
+	font-size: 1em; 
+	color: 	white;
+  font-family: "Roboto", sans-serif;
+}
+
+
+.img_logo{
+  padding: 0px;
+  max-width:610px;
+}
+
+.TituloSistema {
+	color: #235b4e;
+	background: #fff;
+    font-size: 2.5rem;
+    text-align: center!important;
+}
+
+.en{
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+}
+
+.entrar-btn{
+  color: #fff;
+  background: #13322b;
+  border-color: #13322b; 
+  border-radius: 5px;
+}
+.entrar-btn:hover {
+  color: #fff;
+  background: #265b4d;
+  border-color: #265b4d;
+ }
